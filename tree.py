@@ -3,6 +3,7 @@
 '''
 import numpy as np
 from constant import m,n,m1,mx,my,npx,npy,type_complex
+from node import node
 from utils import *
 # tree:
 #                         O 
@@ -18,18 +19,27 @@ from utils import *
 class tree:
     '定义每个node的展开系数'
     def __init__(self):
-        l=self.layers={}
-        zeros=lambda shape:np.zeros(shape,type_complex)
-        l[1]=zeros(m)
-        l[2]=zeros((m,num_combination(m1+n-1,n)))
-        l[3]=zeros((m1,mx,my))
-        l[4]=np.array([zeros((mx,npx)),zeros((my,npy))])
+        l0=self.tree=node(0)
+        l1=l0.addsubnode(node(1,m,l0,l0,1,n))
+        l2=l1.addsubnode(node(2,m1,l0,l1))
+        l3x=l2.addsubnode(node(3,mx,l0,l2))
+        l3y=l2.addsubnode(node(3,my,l0,l2))
+        l4x=l3x.addsubnode(node(4,npx,l0,l3x))
+        l4y=l3y.addsubnode(node(4,npy,l0,l3y))
+        self.tree.makewavefunction()
+        
+        l=self.layers={i:[] for i in range(5)} #按每层索引node
+        for i in self.tree:
+                l[i.layer].append(i)
         s=0
         for k in l:
             for i in l[k]:
-                s+=i.size
+                for j in i._psi:
+                    s+=j.size
         self.psilen=s
 
 if __name__=='__main__':
     t=tree()
+    r=t.tree
+    r.print()
     l=t.layers
