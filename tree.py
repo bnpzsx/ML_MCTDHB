@@ -20,12 +20,12 @@ class tree:
     '定义每个node的展开系数'
     def __init__(self):
         l0=self.tree=node(0)
-        l1=l0.addsubnode(node(1,m,l0,l0,1,n))
-        l2=l1.addsubnode(node(2,m1,l0,l1))
-        l3x=l2.addsubnode(node(3,mx,l0,l2))
-        l3y=l2.addsubnode(node(3,my,l0,l2))
-        l4x=l3x.addsubnode(node(4,npx,l0,l3x))
-        l4y=l3y.addsubnode(node(4,npy,l0,l3y))
+        l1=l0.addsubnode(node(1,m,1,n))
+        l2=l1.addsubnode(node(2,m1))
+        l3x=l2.addsubnode(node(3,mx))
+        l3y=l2.addsubnode(node(3,my))
+        l4x=l3x.addsubnode(node(4,npx))
+        l4y=l3y.addsubnode(node(4,npy))
         self.tree.makewavefunction()
         
         l=self.layers={i:[] for i in range(5)} #按每层索引node

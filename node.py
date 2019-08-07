@@ -3,11 +3,11 @@ from constant import type_complex
 from utils import reduce,num_combination
 
 class node:
-    def __init__(self,layer=1,num_SPFs=1,topnode=None,parent=None,symmetry=0,num_particles=1):
+    def __init__(self,layer=1,num_SPFs=1,symmetry=0,num_particles=1):
         '初始化单个node'
         assert symmetry in [0,1,-1],'Symmetry must be 0, 1 or -1 '
-        self.topnode=topnode
-        self.parent=parent
+        self.topnode=None
+        self.parent=None
         self.layer=layer
         self.symmetry=symmetry #(0 -> no, 1 -> bos., -1 -> ferm. sym.)
         self.num_particles=num_particles #only for symmetry!=0
@@ -24,6 +24,8 @@ class node:
         '添加子node'
         self.subnode.append(node)
         self.subdim.append(node.num_SPFs)
+        node.parent=self
+        node.topnode=self if self.topnode is None else self.topnode
         node.index=self.num_subnode
         self.num_subnode+=1
         return node
