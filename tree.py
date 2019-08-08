@@ -27,12 +27,11 @@ class tree:
         
         l=self.layers={i:[] for i in range(1,5)} #按每层索引node
         for i in self.tree:
-                l[i.layer].append(i)
+            l[i.layer].append(i)
         s=0
-        for k in l:
-            for i in l[k]:
-                for j in i._psi:
-                    s+=j.size
+        for i in self.tree:
+            for j in i._psi:
+                s+=j.size
         self.psilen=s
 
 if __name__=='__main__':
