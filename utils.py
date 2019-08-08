@@ -3,6 +3,7 @@
 '''
 import numpy as np
 from functools import wraps,reduce
+from operator import mul
 
 def map_list(iter_=False):
     '根据提供的函数对指定序列做映射\n仅用于单参数函数'

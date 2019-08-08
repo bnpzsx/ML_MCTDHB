@@ -1,6 +1,6 @@
 import numpy as np
 from constant import type_complex
-from utils import reduce,num_combination
+from utils import reduce,mul,num_combination
 
 class node:
     def __init__(self,layer=1,num_SPFs=1,symmetry=0,num_particles=1):
@@ -14,7 +14,7 @@ class node:
         self.num_SPFs=num_SPFs
         self.subnode=[]
         self.subdim=[] #SPFs of subnodes
-        self.num_subnode=0
+        self.num_subnode=0 # 0 primitive node
         self.index=0 #which node respect to parent node
         self.dim_SPF=0 #length of a SPF
         self._psi=[] #wavefunction of this node
@@ -36,7 +36,7 @@ class node:
         zeros=lambda shape:np.zeros(shape,type_complex)
         if self.subnode:
             if self.symmetry==0:
-                self.dim_SPF=reduce(lambda x,y:x*y,self.subdim)
+                self.dim_SPF=reduce(mul,self.subdim)
                 self._psi=zeros((self.num_SPFs,self.dim_SPF))
             elif self.symmetry==1:
                 m=self.num_particles
