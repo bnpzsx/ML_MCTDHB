@@ -30,8 +30,8 @@ class tree:
             l[i.layer].append(i)
         s=0
         for i in self.tree:
-            for j in i._psi:
-                s+=j.size
+            if i.num_subnode!=0: # 叶子节点没有波函数
+                s+=i._psi.size
         self.psilen=s
 
 if __name__=='__main__':

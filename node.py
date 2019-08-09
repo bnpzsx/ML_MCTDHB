@@ -14,7 +14,7 @@ class node:
         self.num_SPFs=num_SPFs
         self.subnode=[]
         self.subdim=[] #SPFs of subnodes
-        self.num_subnode=0 # 0 primitive node
+        self.num_subnode=0 # 0 leaf node
         self.index=0 #which node respect to parent node
         self.dim_SPF=0 #length of a SPF
         self._psi=[] #wavefunction of this node
