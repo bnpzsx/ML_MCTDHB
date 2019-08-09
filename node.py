@@ -18,7 +18,6 @@ class node:
         self.index=0 #which node respect to parent node
         self.dim_SPF=0 #length of a SPF
         self._psi=[] #wavefunction of this node
-        self.psi=[] #wavefunction of this node and all subnodes
         
     def addsubnode(self,node):
         '添加子node'
@@ -32,7 +31,7 @@ class node:
 
     def makewavefunction(self):
         '定义每一层波函数(展开系数)'
-        assert self.psi==[],'The wavefunction has been defined already'
+        assert self._psi==[],'The wavefunction has been defined already'
         zeros=lambda shape:np.zeros(shape,type_complex)
         if self.subnode:
             if self.symmetry==0:
@@ -45,13 +44,8 @@ class node:
                 self._psi=zeros((self.num_SPFs,self.dim_SPF))
             else:
                 raise OSError('Method for fermionic system is not implemented')
-            self.psi.append(self._psi)
-            subpsi=[]
             for i in self.subnode:
                 i.makewavefunction()
-                if i.subnode:
-                    subpsi.append(i.psi)
-            self.psi.append(subpsi)
 
     def print(self,prefix='├'):
         '打印树图'
