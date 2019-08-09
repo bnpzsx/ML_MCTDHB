@@ -5,6 +5,7 @@ import numpy as np
 from constant import m,n,mx,my,npx,npy,type_complex
 from node import node
 from utils import *
+from reader import psi_reader
 # tree:
 #                        (+)
 #                        ||| n
@@ -34,8 +35,30 @@ class tree:
                 s+=i._psi.size
         self.psilen=s
 
+    def init_from_psi(self,path='restart.ini'):
+        '使用QDTK的restart文件给波函数赋初值'
+        f=psi_reader(path)
+        psi=f.psi[0]
+        assert self.psilen==len(psi),'psi file does not match the tree.'
+        n=0 #psi 读取位置
+        p_node=[] #存放primitive node
+        for i in self.tree:
+            if i.num_subnode>0:
+                if i.subnode[0].num_subnode==0:
+                    p_node.append(i)
+                    continue #跳过primitive node
+            else:
+                continue #跳过叶子节点
+            l=i._psi.size
+            i._psi=np.reshape(psi[n:n+l],(i.num_SPFs,i.dim_SPF))
+            n+=l
+        for i in p_node:
+            l=i._psi.size
+            i._psi=np.reshape(psi[n:n+l],(i.num_SPFs,i.dim_SPF))
+            n+=l
+
 if __name__=='__main__':
     t=tree()
     r=t.tree
     r.print()
-    l=t.layers
+    t.init_from_psi('restart.ini')
