@@ -1,6 +1,6 @@
 import numpy as np
 from constant import type_complex
-from utils import reduce,mul,num_combination
+from utils import num_combination
 
 class node:
     def __init__(self,layer=1,num_SPFs=1,symmetry=0,num_particles=1):
@@ -36,7 +36,7 @@ class node:
         zeros=lambda shape:np.zeros(shape,type_complex)
         if self.subnode:
             if self.symmetry==0:
-                self.dim_SPF=reduce(mul,self.subdim)
+                self.dim_SPF=np.prod(self.subdim)
                 self._psi=zeros((self.num_SPFs,self.dim_SPF))
             elif self.symmetry==1:
                 m=self.num_particles
