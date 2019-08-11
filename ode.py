@@ -27,6 +27,9 @@ class solver():
     other parameters :
       - atol : float or sequence absolute tolerance for solution
       - rtol : float or sequence relative tolerance for solution
+      - nsteps : int
+        Maximum number of (internally defined) steps allowed during one
+        call to the solver.
       - first_step : float
       - min_step : float
       - max_step : float
@@ -39,7 +42,7 @@ class solver():
         Beta parameter for stabilised step size control.
     '''
 
-    def __init__(self,f,jac=None,integrator='zvode',stiff=False,**para):
+    def __init__(self,f,jac=None,integrator='zvode',stiff=False,nsteps=10000,**para):
         self._f=f
         self._jac=jac
         self.integrator=integrator
@@ -47,6 +50,7 @@ class solver():
         self.solver=ode(f,jac)
         method='adams' if not stiff else 'bdf'
         para['method']=method
+        para['nsteps']=nsteps
         self.solver.set_integrator(integrator,**para)
 
     def set_initial_value(self, y0, t0):
