@@ -3,6 +3,7 @@
 '''
 import numpy as np
 from functools import wraps,reduce
+from itertools import combinations_with_replacement
 
 def map_list(iter_=False):
     '根据提供的函数对指定序列做映射\n仅用于单参数函数'
@@ -36,3 +37,8 @@ def num_combination(n,m):
     if m==0 or m==n:
         return 1
     return num_permutation(n,m)//factorial(m)
+
+def num_combination_repetition(n,m):
+    'H(n,m) 从n个不同的元素取出m个元素的允许重复的组合总数'
+    assert n>=1 ,'组合参数不符合要求, %d<1'%(n)
+    return num_combination(n+m-1,m)
