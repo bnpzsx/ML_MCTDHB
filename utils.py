@@ -58,17 +58,14 @@ def ns_index(ns):
     #先逆变换为插板位置,再变为序号
     n=sum(ns)
     m=len(ns)
-    num_ns=num_combination_repetition(n+1,m-1)
-    a=[]
+    num_ns=num_combination(n+m-1,n)
     t=0
+    index=0
+    o=0
     for i in range(m-1):
         t=t+ns[i]
-        a.append(t)
-    index=0
-    t=0
-    for i,j in enumerate(a):
-        for l,k in enumerate(range(j-t)):
-            w=num_combination_repetition(n+1-k-t,m-2-i)
-            index+=w    
-        t=j
+        for l,k in enumerate(range(t-o)):
+            w=num_combination_repetition(n+1-k-o,m-2-i)
+            index+=w
+        o=t
     return num_ns-index-1
