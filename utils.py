@@ -64,8 +64,8 @@ def ns_index(ns):
     o=0
     for i in range(m-1):
         t=t+ns[i]
-        for l,k in enumerate(range(t-o)):
-            w=num_combination_repetition(n+1-k-o,m-2-i)
+        for j in range(t-o):
+            w=num_combination_repetition(n+1-j-o,m-2-i)
             index+=w
         o=t
     return num_ns-index-1
