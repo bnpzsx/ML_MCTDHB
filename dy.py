@@ -11,7 +11,7 @@ from tree import tree
 #                     O -mx   O -my
 #                     |       |
 #                     O -npx  O -npy
-a=-1
+a=-0.5
 b=1
 c=1
 
@@ -95,6 +95,30 @@ def P_operator(psi):
     temp=zeros((mp[0]*mp[1],mp[0]*mp[1]))
     temp=matmul(psi[2].T,conj(psi[2]))
     return temp
+
+def P_base_operator(psi):
+    '投影算符在底层上的形式'
+    temp={}
+    for i in range(sdof):
+        temp[i]=matmul(psi[i].T,conj(psi[i]))
+    return temp
+
+def n_base(psi,a):
+    pass
+    '求出波函数在任意一个number state的分量并展开在底层基矢上'
+    temp={}
+    temp1=ns_index_(a)
+    temp2=1
+    for i in range(a):
+        temp2=factorial(i)*temp2
+    temp2=sqrt(temp2/factorial(n))
+    for i in range(m):
+        for j in range(a[m]):
+            for k in range(sdof):
+                for l in range(mp[k]):
+                    temp[sum(a[0:i])+j][k][l]=psi[2][i][sum(mp[0:k])+l]
+    
+    return ()
 
 def ns_distrubution_(n,m):
     '存储N个粒子m个态体系的二次量子化波矢'
@@ -187,7 +211,7 @@ if __name__=='__main__':
     tree=tree()
     tree.init_from_psi('restart.ini')
     t=tree.layers
-    psi=[t[3][0]._psi,t[3][1]._psi,t[2][0]._psi,reshape(t[1][0]._psi,(-1))+1e-15]
+    psi=[t[3][0]._psi,t[3][1]._psi,t[2][0]._psi,reshape(t[1][0]._psi,(-1))+1e-2]
     l=2*sdof*n+sdof**2*num_combination(n,2)
     htable={}#{i:{j:{} for j in range(3)} for i in range(l)} #三个维度，第一维表示第几个算符，第二维表示层数，第三维表示同一层的第几个
     #动能项
