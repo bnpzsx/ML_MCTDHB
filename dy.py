@@ -104,21 +104,29 @@ def P_base_operator(psi):
     return temp
 
 def n_base(psi,a):
-    pass
     '求出波函数在任意一个number state的分量并展开在底层基矢上'
-    temp={}
+    temp=zeros((n,mp[0]*mp[1]),dtype=complex)
     temp1=ns_index_(a)
     temp2=1
-    for i in range(a):
+    for i in a:
         temp2=factorial(i)*temp2
     temp2=sqrt(temp2/factorial(n))
     for i in range(m):
-        for j in range(a[m]):
-            for k in range(sdof):
-                for l in range(mp[k]):
-                    temp[sum(a[0:i])+j][k][l]=psi[2][i][sum(mp[0:k])+l]
-    
-    return ()
+        for j in range(a[i]):
+            for k in range(mp[0]*mp[1]):
+                temp[sum(a[0:i])+j,k]=psi[2][i,k]
+    temp3=temp[0,:]
+    for i in range(1,n):
+        temp3=kron(temp3,temp[i])
+    temp3=psi[3][temp1]*temp2*temp3
+    return (temp3)
+
+def PSI(psi):
+    temp={}
+    temp=0
+    for i in ns_distrubution_(n,m):
+        temp=temp+n_base(psi,i)
+    return temp
 
 def ns_distrubution_(n,m):
     '存储N个粒子m个态体系的二次量子化波矢'
@@ -231,11 +239,11 @@ if __name__=='__main__':
     #投影算符
     P=P_operator(psi)
     pho=pho_operator(shf_operator(psi))
-    print(pho)
     #平均场算符
     H1=h1_meanoperator(htable)  
-    H2=h2_meanoperator(htable,psi[3])    
-    dy=drives(0,psi[2])
+    H2=h2_meanoperator(htable,psi[3])
+    #dy=drives(0,psi[2])
+    PSI=PSI(psi)
     
     
     
