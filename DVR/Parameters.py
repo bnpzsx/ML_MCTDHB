@@ -16,20 +16,20 @@ from sdvr_new import Sindvr
 #                     O -npx  O -npy
 
 n  = 2
-m  = 2
+m  = 10
 
-mx = 2
-my = 2
+mx = 10
+my = 10
 
 ###############################################################################
 # DVRs in x- and y- direction
 x_min = -5.0
 x_max =  5.0
-npx   =  10
+npx   =  100
 
 y_min = -5.0
 y_max =  5.0
-npy   =  10
+npy   =  100
 
 #Qx_dvr = QDTK.sdvr(npx,x_min,x_max)
 #Qy_dvr = QDTK.sdvr(npy,y_min,y_max)
