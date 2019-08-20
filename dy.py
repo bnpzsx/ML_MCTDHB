@@ -2,6 +2,7 @@ from pylab import *
 from utils import *
 import constant as C
 from tree import tree
+from operator import mul
 # tree:
 #                        (+)
 #                        ||| n
@@ -96,8 +97,8 @@ def P_operator(psi):
     temp=matmul(psi[2].T,conj(psi[2]))
     return temp
 
-def P_base_operator(psi):
-    '投影算符在底层上的形式'
+def P_sub_operator(psi):
+    '当定义单粒子函数为一个自由度的函数时投影算符在底层上的形式'
     temp={}
     for i in range(sdof):
         temp[i]=matmul(psi[i].T,conj(psi[i]))
@@ -119,7 +120,7 @@ def n_base(psi,a):
     for i in range(1,n):
         temp3=kron(temp3,temp[i])
     temp3=psi[3][temp1]*temp2*temp3
-    return (temp3)
+    return temp3
 
 def PSI(psi):
     '总的波函数在截断层的展开'
@@ -128,6 +129,26 @@ def PSI(psi):
     for i in ns_distrubution_(n,m):
         temp=temp+n_base(psi,i)
     return temp
+
+def shf_sub(s,dof,PSI):
+    '当定义单粒子函数为一个自由度的函数时single hole function在截断层形式'
+    if dof==0:
+        temp1=reduce(mul,mp)**s
+    else:
+        temp1=reduce(mul,mp)**s*reduce(mul,mp[0:dof])
+    if dof==sdof-1:
+        temp2=reduce(mul,mp)**(n-s-1)
+    else:
+        temp2=reduce(mul,mp)**(n-s-1)*reduce(mul,mp[dof+1:sdof])
+    temp=zeros((mp[dof],temp1*temp2),dtype=complex)
+    for i in range(mp[dof]):
+        for j in range(temp1):
+            temp[i,j*temp2:j*temp2+temp2]=PSI[(j*mp[dof]+i)*temp2:(j*mp[dof]+i+1)*temp2]
+    return temp
+
+def pho_sub(shf):
+    '当定义单粒子函数为一个自由度的函数时密度矩阵形式'
+    pass
 
 def ns_distrubution_(n,m):
     '存储N个粒子m个态体系的二次量子化波矢'
@@ -244,8 +265,8 @@ if __name__=='__main__':
     H1=h1_meanoperator(htable)  
     H2=h2_meanoperator(htable,psi[3])
     #dy=drives(0,psi[2])
-    PSI=PSI(psi)
-    
+    #PSI=PSI(psi)
+    #shf=shf_sub(0,1,PSI)
     
     
     
