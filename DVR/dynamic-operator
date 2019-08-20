@@ -132,7 +132,7 @@ unit   100      1      2      1
 
 unit   100      1      2      2
 
-tstatic_rcoef      1    1.00000000000
+tstatic_rcoef      1   -0.50000000000
 
 unit   100      2      1      1
 
@@ -242,7 +242,7 @@ tstatic_cmat   100      2      2      1
 
 unit   100      2      2      2
 
-tstatic_rcoef      2    1.00000000000
+tstatic_rcoef      2   -0.50000000000
 
 tstatic_cvec   100      3      1       1   
 
