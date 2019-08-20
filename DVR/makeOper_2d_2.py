@@ -37,11 +37,12 @@ def returnOperator():
     OPER.addLabel('q_x',Operb.OTerm(Qx_dvr.x))
     OPER.addLabel('q_y',Operb.OTerm(Qy_dvr.x))
     OPER.addLabel('a_0',Operb.OCoef(1.0))
+    OPER.addLabel('a_1',Operb.OCoef(-0.5))
 
 
     tab="""
-a_0          |1 dq2_x
-a_0          |2 dq2_y
+a_1          |1 dq2_x
+a_1          |2 dq2_y
 a_0          |1 q^2_x
 a_0          |2 q^2_y
 a_0          |1 q_x  |2 q_y
