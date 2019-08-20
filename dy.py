@@ -104,7 +104,7 @@ def P_base_operator(psi):
     return temp
 
 def n_base(psi,a):
-    '求出波函数在任意一个number state的分量并展开在底层基矢上'
+    '求出波函数任意一个number state分量并展开在截断层基矢上'
     temp=zeros((n,mp[0]*mp[1]),dtype=complex)
     temp1=ns_index_(a)
     temp2=1
@@ -122,6 +122,7 @@ def n_base(psi,a):
     return (temp3)
 
 def PSI(psi):
+    '总的波函数在截断层的展开'
     temp={}
     temp=0
     for i in ns_distrubution_(n,m):
