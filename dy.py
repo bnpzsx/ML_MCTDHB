@@ -2,7 +2,6 @@ from pylab import *
 from utils import *
 import constant as C
 from tree import tree
-from operator import mul
 # tree:
 #                        (+)
 #                        ||| n
@@ -22,11 +21,12 @@ mp=[C.mx,C.my]
 np=[C.npx,C.npy]
 x=arange(-5,5,0.1)
 y=arange(-5,5,0.1)
+dvr=[x,y]
 sdof=2
 
 def Trimat(md,a=a):
     '三对角矩阵展开在底层'
-    temp=zeros((md,md),complex)
+    temp=zeros((md,md),C.type_complex)
     for i in range(1,md-1):
         temp[i,i]=-2*a
         temp[i,i+1]=temp[i,i-1]=a
@@ -34,11 +34,10 @@ def Trimat(md,a=a):
     temp[0,1]=temp[md-1,md-2]=a
     return temp
 
-def diagmat(md,c,b=b):
-    '对角矩阵与位置c次方关系：维度、指数、系数'
-    temp=zeros((md,md))
-    for i in range(md):
-        temp[i,i]=b*x[i]**c
+def diagmat(x,c,b=b):
+    '''对角矩阵与位置c次方关系：维度、指数、系数
+        diag([b*x[i]**c for i in range(md)])'''
+    temp=diag([b*i**c for i in x])
     return temp
 
 def h_operator(tv,dof,psi):
@@ -49,7 +48,7 @@ def h_operator(tv,dof,psi):
             if tv==0:
                 temp[0][i]=Trimat(np[dof])
             else:
-                temp[0][i]=diagmat(np[dof],2)
+                temp[0][i]=diagmat(dvr[dof],2)
             temp[1][i]=Rt(psi[i],temp[0][i])
         else:
             temp[0][i]=eye(np[i])
@@ -65,13 +64,13 @@ def W_operator(dof1,dof2,psi):
     temp={i:{} for i in range(3)}
     for i in range(sdof):
         if i==dof1:
-            temp[0][i]=diagmat(np[dof1],1)
+            temp[0][i]=diagmat(dvr[dof1],1)
             temp[1][i]=Rt(psi[i],temp[0][i])
         else:
             temp[0][i]=eye(np[i])
             temp[1][i]=eye(mp[i])
         if i==dof2:
-            temp[0][sdof+i]=diagmat(np[dof2],1)
+            temp[0][sdof+i]=diagmat(dvr[dof2],1)
             temp[1][sdof+i]=Rt(psi[i],temp[0][sdof+i])
         else:
             temp[0][sdof+i]=eye(np[i])
@@ -86,45 +85,43 @@ def W_operator(dof1,dof2,psi):
     return temp
 
 def Rt(A,H):
-    '不同层算符转化'
+    '<A|H|A>'
     temp=matmul(conj(A),H)
     temp=matmul(temp,A.T)
     return temp
 
-def P_operator(psi):
+def P_operator(psi,i=2):
     '投影算符在sub_particle上'
-    temp=zeros((mp[0]*mp[1],mp[0]*mp[1]))
-    temp=matmul(psi[2].T,conj(psi[2]))
+    temp=matmul(psi[i].T,conj(psi[i]))
     return temp
 
 def P_sub_operator(psi):
     '当定义单粒子函数为一个自由度的函数时投影算符在底层上的形式'
     temp={}
     for i in range(sdof):
-        temp[i]=matmul(psi[i].T,conj(psi[i]))
+        temp[i]=P_operator(psi,i)
     return temp
 
 def n_base(psi,a):
     '求出波函数任意一个number state分量并展开在截断层基矢上'
-    temp=zeros((n,mp[0]*mp[1]),dtype=complex)
-    temp1=ns_index_(a)
-    temp2=1
-    for i in a:
-        temp2=factorial(i)*temp2
-    temp2=sqrt(temp2/factorial(n))
+    n=sum(a) #粒子数
+    m=len(a) #轨道数
+    temp=zeros((n,prod(mp)),dtype=C.type_complex)
+    index=ns_index_(a)
+    num_2=prod(factorial(a))
+    num_2=sqrt(num_2/factorial(n))
     for i in range(m):
         for j in range(a[i]):
-            for k in range(mp[0]*mp[1]):
+            for k in range(prod(mp)):
                 temp[sum(a[0:i])+j,k]=psi[2][i,k]
     temp3=temp[0,:]
     for i in range(1,n):
         temp3=kron(temp3,temp[i])
-    temp3=psi[3][temp1]*temp2*temp3
+    temp3=psi[3][index]*num_2*temp3
     return temp3
 
 def PSI(psi):
     '总的波函数在截断层的展开'
-    temp={}
     temp=0
     for i in ns_distrubution_(n,m):
         temp=temp+n_base(psi,i)
@@ -133,17 +130,17 @@ def PSI(psi):
 def shf_sub(s,dof,PSI):
     '当定义单粒子函数为一个自由度的函数时single hole function在截断层形式'
     if dof==0:
-        temp1=reduce(mul,mp)**s
+        d1=prod(mp)**s
     else:
-        temp1=reduce(mul,mp)**s*reduce(mul,mp[0:dof])
+        d1=prod(mp)**s*prod(mp[0:dof])
     if dof==sdof-1:
-        temp2=reduce(mul,mp)**(n-s-1)
+        d2=prod(mp)**(n-s-1)
     else:
-        temp2=reduce(mul,mp)**(n-s-1)*reduce(mul,mp[dof+1:sdof])
-    temp=zeros((mp[dof],temp1*temp2),dtype=complex)
+        d2=prod(mp)**(n-s-1)*prod(mp[dof+1:sdof])
+    temp=zeros((mp[dof],d1*d2),dtype=C.type_complex)
     for i in range(mp[dof]):
-        for j in range(temp1):
-            temp[i,j*temp2:j*temp2+temp2]=PSI[(j*mp[dof]+i)*temp2:(j*mp[dof]+i+1)*temp2]
+        for j in range(d1):
+            temp[i,j*d2:j*d2+d2]=PSI[(j*mp[dof]+i)*d2:(j*mp[dof]+i+1)*d2]
     return temp
 
 def pho_sub(shf):
@@ -160,13 +157,13 @@ def ns_index_(a):
 
 def shf_operator(psi):
     'single hole fuction在占据数表象的形式(1.15)'
-    temp1=ns_distrubution_(n-1,m)
-    temp=zeros((m,temp1.shape[0]),complex)
-    for i in range(temp1.shape[0]):
+    ns=ns_distrubution_(n-1,m)
+    temp=zeros(ns.shape,C.type_complex).T
+    for i,k in enumerate(ns):
         for j in range(m):
-            temp2=temp1[i].copy()
+            temp2=k.copy()
             temp2[j]=temp2[j]+1
-            temp[j][i]=sqrt((temp1[i][j]+1)/n)*psi[3][ns_index_(temp2)]
+            temp[j][i]=sqrt((k[j]+1)/n)*psi[3][ns_index_(temp2)]
     return temp
 
 def pho_operator(shf):
@@ -239,9 +236,9 @@ def drives(t,y):
 
 if __name__=='__main__':
     tree=tree()
-    tree.init_from_psi('restart.ini')
+    tree.init_from_psi('dvr/restart.ini')
     t=tree.layers
-    psi=[t[3][0]._psi,t[3][1]._psi,t[2][0]._psi,reshape(t[1][0]._psi,(-1))+1e-2]
+    psi=[t[3][0]._psi,t[3][1]._psi,t[2][0]._psi,reshape(t[1][0]._psi,(-1))+1e-10]
     l=2*sdof*n+sdof**2*num_combination(n,2)
     htable={}#{i:{j:{} for j in range(3)} for i in range(l)} #三个维度，第一维表示第几个算符，第二维表示层数，第三维表示同一层的第几个
     #动能项
@@ -264,9 +261,9 @@ if __name__=='__main__':
     #平均场算符
     H1=h1_meanoperator(htable)  
     H2=h2_meanoperator(htable,psi[3])
-    #dy=drives(0,psi[2])
-    #PSI=PSI(psi)
-    #shf=shf_sub(0,1,PSI)
+    dy=drives(0,psi[2])
+    PSI=PSI(psi)
+    shf=shf_sub(0,1,PSI)
     
     
     
